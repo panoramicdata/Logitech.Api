@@ -1,9 +1,9 @@
-{
-  "solution": {
-    "path": "Logitech.Api.sln",
-    "projects": [
-      "Logitech.Api\\Logitech.Api.csproj",
-      "Logitech.Api.Test\\Logitech.Api.Test.csproj"
-    ]
-  }
-}
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Logitech.Api.Test/Logitech.Api.Test.csproj" />
+  <Project Path="Logitech.Api/Logitech.Api.csproj" />
+</Solution>

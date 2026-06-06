@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Logitech.Api.Test;
 
@@ -45,7 +44,9 @@ public class IntegrationTests
 
 		var client = new LogitechSyncClient(httpClient, new LogitechSyncClientOptions());
 
-		var response = await client.Places.GetAsync(orgId);
+		var response = await client.Places.GetAsync(
+			orgId,
+			cancellationToken: TestContext.Current.CancellationToken);
 
 		Assert.NotNull(response);
 		Assert.NotEmpty(response.Places);
