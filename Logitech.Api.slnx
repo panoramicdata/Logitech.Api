@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Solution>
   <Configurations>
     <Platform Name="Any CPU" />
@@ -17,6 +18,8 @@
     <File Path="Publish.ps1" />
     <File Path="README.md" />
     <File Path="version.json" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="SECURITY.md" />
   </Folder>
   <Project Path="Logitech.Api.Test/Logitech.Api.Test.csproj" />
   <Project Path="Logitech.Api/Logitech.Api.csproj" />

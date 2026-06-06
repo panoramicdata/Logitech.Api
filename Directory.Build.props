@@ -1,7 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+    <Copyright>Copyright © Panoramic Data Limited</Copyright>
+    <Authors>Panoramic Data Limited</Authors>
+    <Company>Panoramic Data Limited</Company>
+    <NuGetAuditMode>All</NuGetAuditMode>
   </PropertyGroup>
 </Project>

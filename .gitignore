@@ -29,3 +29,4 @@ coverage.cobertura.xml
 # OS files
 .DS_Store
 Thumbs.db
+nuget-key.txt

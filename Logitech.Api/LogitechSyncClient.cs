@@ -23,21 +23,10 @@ public class LogitechSyncClient
 
 		var handler = new AuthenticatedHttpHandler(options);
 
-		var httpClient = new HttpClient(handler)
+		var client = new HttpClient(handler)
 		{
 			BaseAddress = new Uri("https://api.sync.logitech.com")
 		};
-
-		var client = new HttpClient(handler)
-		{
-			BaseAddress = httpClient.BaseAddress,
-			Timeout = httpClient.Timeout
-		};
-
-		foreach (var header in httpClient.DefaultRequestHeaders)
-		{
-			client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
-		}
 
 		var refitSettings = new RefitSettings
 		{

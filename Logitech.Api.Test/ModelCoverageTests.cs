@@ -88,53 +88,14 @@ public sealed class ModelCoverageTests
 			return CreateValue(nullableUnderlying, seed);
 		}
 
-		if (type == typeof(string))
+		if (IsPrimitiveType(type, seed, out var primitiveValue))
 		{
-			return $"value-{seed}";
-		}
-
-		if (type == typeof(int))
-		{
-			return seed;
-		}
-
-		if (type == typeof(long))
-		{
-			return (long)seed;
-		}
-
-		if (type == typeof(double))
-		{
-			return seed + 0.5;
-		}
-
-		if (type == typeof(bool))
-		{
-			return true;
-		}
-
-		if (type == typeof(JsonElement))
-		{
-			using var document = JsonDocument.Parse("{\"sample\":1}");
-			return document.RootElement.Clone();
-		}
-
-		if (type == typeof(Microsoft.Extensions.Logging.ILogger))
-		{
-			return Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+			return primitiveValue;
 		}
 
 		if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
 		{
-			var elementType = type.GetGenericArguments()[0];
-			var list = (IList)Activator.CreateInstance(type)!;
-			var element = CreateValue(elementType, seed + 100);
-			if (element is not null)
-			{
-				list.Add(element);
-			}
-
-			return list;
+			return CreateListValue(type, seed);
 		}
 
 		if (type.IsClass)
@@ -144,5 +105,68 @@ public sealed class ModelCoverageTests
 		}
 
 		return null;
+	}
+
+	private static bool IsPrimitiveType(Type type, int seed, out object? value)
+	{
+		value = null;
+
+		if (type == typeof(string))
+		{
+			value = $"value-{seed}";
+			return true;
+		}
+
+		if (type == typeof(int))
+		{
+			value = seed;
+			return true;
+		}
+
+		if (type == typeof(long))
+		{
+			value = (long)seed;
+			return true;
+		}
+
+		if (type == typeof(double))
+		{
+			value = seed + 0.5;
+			return true;
+		}
+
+		if (type == typeof(bool))
+		{
+			value = true;
+			return true;
+		}
+
+		if (type == typeof(JsonElement))
+		{
+			using var document = JsonDocument.Parse("{\"sample\":1}");
+			value = document.RootElement.Clone();
+			return true;
+		}
+
+		if (type == typeof(Microsoft.Extensions.Logging.ILogger))
+		{
+			value = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
+			return true;
+		}
+
+		return false;
+	}
+
+	private static object? CreateListValue(Type type, int seed)
+	{
+		var elementType = type.GetGenericArguments()[0];
+		var list = (IList)Activator.CreateInstance(type)!;
+		var element = CreateValue(elementType, seed + 100);
+		if (element is not null)
+		{
+			list.Add(element);
+		}
+
+		return list;
 	}
 }
