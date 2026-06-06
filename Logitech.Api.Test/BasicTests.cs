@@ -26,15 +26,4 @@ public sealed class BasicTests
 				RequestMessage = request
 			});
 	}
-
-	private sealed class TestableAuthenticatedHttpHandler : AuthenticatedHttpHandler
-	{
-		public TestableAuthenticatedHttpHandler(LogitechSyncClientOptions options)
-			: base(options)
-		{
-			InnerHandler = new StubHttpMessageHandler();
-		}
-
-		public Task<HttpResponseMessage> InvokeSendAsync(HttpRequestMessage? request, CancellationToken cancellationToken) => SendAsync(request!, cancellationToken);
-	}
 }

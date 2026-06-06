@@ -10,6 +10,7 @@ internal sealed class XunitLogger(ITestOutputHelper output, string categoryName 
 
 		public void Dispose()
 		{
+			// No resources to dispose
 		}
 	}
 

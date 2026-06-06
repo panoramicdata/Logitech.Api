@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using System.Security.Cryptography.X509Certificates;
-
 namespace Logitech.Api;
 
 /// <summary>
@@ -22,7 +18,7 @@ public class LogitechSyncClientOptions
 	/// <summary>
 	/// Controls whether write HTTP methods are allowed.
 	/// </summary>
-	public bool IsWritePermitted { get; set; } = false;
+	public bool IsWritePermitted { get; set; }
 
 	/// <summary>
 	///	Mandatory private key in PEM format used for signing requests. This should be the private key corresponding to the public key in the client certificate.
