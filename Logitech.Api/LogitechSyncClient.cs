@@ -1,9 +1,4 @@
 using Logitech.Api.Interfaces;
-using Refit;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text.Json;
 
 namespace Logitech.Api;
 
@@ -12,7 +7,7 @@ namespace Logitech.Api;
 /// </summary>
 public class LogitechSyncClient
 {
-	private static readonly JsonSerializerOptions SerializerOptions = new()
+	private static readonly JsonSerializerOptions _serializerOptions = new()
 	{
 		PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
 		DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
@@ -21,21 +16,16 @@ public class LogitechSyncClient
 	/// <summary>
 	/// Initializes a new instance of the <see cref="LogitechSyncClient"/> class.
 	/// </summary>
-	/// <param name="httpClient">The source <see cref="HttpClient"/> containing base address and headers.</param>
 	/// <param name="options">Client options including mTLS certificate and write-permission settings.</param>
-	public LogitechSyncClient(HttpClient httpClient, LogitechSyncClientOptions options)
+	public LogitechSyncClient(LogitechSyncClientOptions options)
 	{
-		ArgumentNullException.ThrowIfNull(httpClient);
 		ArgumentNullException.ThrowIfNull(options);
 
-		if (httpClient.BaseAddress is null)
-		{
-			throw new ArgumentException("The provided HttpClient must have a BaseAddress.", nameof(httpClient));
-		}
+		var handler = new AuthenticatedHttpHandler(options);
 
-		var handler = new AuthenticatedHttpHandler(options)
+		var httpClient = new HttpClient(handler)
 		{
-			InnerHandler = new HttpClientHandler()
+			BaseAddress = new Uri("https://api.sync.logitech.com/v1/")
 		};
 
 		var client = new HttpClient(handler)
@@ -44,14 +34,14 @@ public class LogitechSyncClient
 			Timeout = httpClient.Timeout
 		};
 
-		foreach (KeyValuePair<string, IEnumerable<string>> header in httpClient.DefaultRequestHeaders)
+		foreach (var header in httpClient.DefaultRequestHeaders)
 		{
 			client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
 		}
 
 		var refitSettings = new RefitSettings
 		{
-			ContentSerializer = new SystemTextJsonContentSerializer(SerializerOptions)
+			ContentSerializer = new SystemTextJsonContentSerializer(_serializerOptions)
 		};
 
 		Places = RestService.For<IPlaces>(client, refitSettings);

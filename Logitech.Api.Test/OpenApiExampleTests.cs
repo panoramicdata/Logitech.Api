@@ -1,14 +1,8 @@
-using Logitech.Api.Data;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using Xunit;
-
 namespace Logitech.Api.Test;
 
 public sealed class OpenApiExampleTests
 {
-	private static readonly JsonSerializerOptions JsonOptions = new()
+	private static readonly JsonSerializerOptions _jsonOptions = new()
 	{
 		PropertyNameCaseInsensitive = true
 	};
@@ -16,7 +10,7 @@ public sealed class OpenApiExampleTests
 	[Fact]
 	public void GetPlacesExample_DeserializesExpectedRoomAndDeskShape()
 	{
-		string json = """
+		var json = """
 		{
 		  "places": [
 		    {
@@ -134,27 +128,27 @@ public sealed class OpenApiExampleTests
 		}
 		""";
 
-		PlaceResponse response = JsonSerializer.Deserialize<PlaceResponse>(json, JsonOptions) ?? throw new Xunit.Sdk.XunitException("Response should deserialize.");
+		var response = JsonSerializer.Deserialize<PlaceResponse>(json, _jsonOptions) ?? throw new Xunit.Sdk.XunitException("Response should deserialize.");
 
-		Assert.Equal("next-page-token", response.Continuation);
-		Assert.Equal(2, response.Places.Count);
+		response.Continuation.Should().Be("next-page-token");
+		response.Places.Should().HaveCount(2);
 
-		JsonElement room = response.Places[0];
-		Assert.Equal("Room", room.GetProperty("type").GetString());
-		Assert.Equal("Large Room 5", room.GetProperty("name").GetString());
-		Assert.Equal(12, room.GetProperty("seatCount").GetInt32());
-		Assert.Equal(3, room.GetProperty("devices").GetArrayLength());
+		var room = response.Places[0];
+		room.GetProperty("type").GetString().Should().Be("Room");
+		room.GetProperty("name").GetString().Should().Be("Large Room 5");
+		room.GetProperty("seatCount").GetInt32().Should().Be(12);
+		room.GetProperty("devices").GetArrayLength().Should().Be(3);
 
-		JsonElement desk = response.Places[1];
-		Assert.Equal("Desk", desk.GetProperty("type").GetString());
-		Assert.Equal("Desk 13", desk.GetProperty("name").GetString());
-		Assert.Equal(2, desk.GetProperty("devices").GetArrayLength());
+		var desk = response.Places[1];
+		desk.GetProperty("type").GetString().Should().Be("Desk");
+		desk.GetProperty("name").GetString().Should().Be("Desk 13");
+		desk.GetProperty("devices").GetArrayLength().Should().Be(2);
 	}
 
 	[Fact]
 	public void DeviceExample_DeserializesNestedModelShapes()
 	{
-		string json = """
+		var json = """
 		{
 		  "id": "logitech-1",
 		  "type": "Logitech",
@@ -200,24 +194,24 @@ public sealed class OpenApiExampleTests
 		}
 		""";
 
-		LogitechDevice device = JsonSerializer.Deserialize<LogitechDevice>(json, JsonOptions) ?? throw new Xunit.Sdk.XunitException("Device should deserialize.");
+		var device = JsonSerializer.Deserialize<LogitechDevice>(json, _jsonOptions) ?? throw new Xunit.Sdk.XunitException("Device should deserialize.");
 
-		Assert.Equal("logitech-1", device.Id);
-		Assert.Equal("Logitech", device.Type);
-		Assert.Equal("Rally", device.Name);
-		Assert.Equal("1.2.69", device.Version);
-		Assert.Equal("ABC123", device.Serial);
-		Assert.Equal("Online", device.Status);
-		Assert.Equal("Warning", device.HealthStatus);
-		Assert.Equal(1717200121230, device.LastSeen);
-		Assert.NotNull(device.Peripherals);
-		Assert.Equal(1, device.Peripherals!.Camera!.Count.Actual);
-		Assert.Equal(2, device.Peripherals.Speaker!.Count.Actual);
-		Assert.NotNull(device.Network);
-		Assert.Equal("DockFlex-30VV78", device.Network!.HostName);
-		Assert.NotNull(device.Sensors);
-		Assert.Equal(650, device.Sensors!.Co2);
-		Assert.NotNull(device.Warranty);
-		Assert.Equal("SelectDesk", device.Warranty!.Type);
+		device.Id.Should().Be("logitech-1");
+		device.Type.Should().Be("Logitech");
+		device.Name.Should().Be("Rally");
+		device.Version.Should().Be("1.2.69");
+		device.Serial.Should().Be("ABC123");
+		device.Status.Should().Be("Online");
+		device.HealthStatus.Should().Be("Warning");
+		device.LastSeen.Should().Be(1717200121230);
+		device.Peripherals.Should().NotBeNull();
+		device.Peripherals!.Camera!.Count.Actual.Should().Be(1);
+		device.Peripherals.Speaker!.Count.Actual.Should().Be(2);
+		device.Network.Should().NotBeNull();
+		device.Network!.HostName.Should().Be("DockFlex-30VV78");
+		device.Sensors.Should().NotBeNull();
+		device.Sensors!.Co2.Should().Be(650);
+		device.Warranty.Should().NotBeNull();
+		device.Warranty!.Type.Should().Be("SelectDesk");
 	}
 }

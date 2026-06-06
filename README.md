@@ -107,8 +107,8 @@ Integration tests use user-secrets. Configure the following values:
 {
   "Logitech": {
 	"OrgId": "YOUR_ORG_ID",
-	"CertificatePath": "PATH_TO_YOUR_CERT.pfx",
-	"CertificatePassword": "YOUR_CERT_PASSWORD"
+	"Certificate": "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----",
+	"PrivateKey": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
   }
 }
 ```

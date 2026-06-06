@@ -1,11 +1,3 @@
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-
 namespace Logitech.Api.Test;
 
 public sealed class BasicTests
@@ -13,62 +5,26 @@ public sealed class BasicTests
 	[Fact]
 	public void HandlerCtor_ThrowsWhenOptionsAreNull()
 	{
-		Assert.Throws<ArgumentNullException>(() => _ = new AuthenticatedHttpHandler(null!));
-	}
+		Action act = () => _ = new AuthenticatedHttpHandler(null!);
 
-	[Fact]
-	public void ClientCtor_ThrowsWhenBaseAddressIsMissing()
-	{
-		HttpClient httpClient = new();
-		LogitechSyncClientOptions options = new();
-
-		Action act = () => _ = new LogitechSyncClient(httpClient, options);
-
-		Assert.Throws<ArgumentException>(act);
-	}
-
-	[Fact]
-	public void ClientCtor_ThrowsWhenHttpClientIsNull()
-	{
-		Assert.Throws<ArgumentNullException>(() => _ = new LogitechSyncClient(null!, new LogitechSyncClientOptions()));
+		act.Should().Throw<ArgumentNullException>();
 	}
 
 	[Fact]
 	public void ClientCtor_ThrowsWhenOptionsAreNull()
 	{
-		HttpClient httpClient = new()
-		{
-			BaseAddress = new Uri("https://api.sync.logitech.com/v1/")
-		};
+		Action act = () => _ = new LogitechSyncClient(null!);
 
-		Assert.Throws<ArgumentNullException>(() => _ = new LogitechSyncClient(httpClient, null!));
+		act.Should().Throw<ArgumentNullException>();
 	}
 
 	[Fact]
 	public void ClientCtor_CreatesRefitInterface()
 	{
-		HttpClient httpClient = new(new StubHttpMessageHandler())
-		{
-			BaseAddress = new Uri("https://api.sync.logitech.com/v1/")
-		};
+		using var cert = CreateTestCertificate();
+		var client = new LogitechSyncClient(CreateOptions(cert));
 
-		LogitechSyncClient client = new(httpClient, new LogitechSyncClientOptions());
-
-		Assert.NotNull(client.Places);
-	}
-
-	[Fact]
-	public void ClientCtor_CopiesDefaultHeaders()
-	{
-		HttpClient httpClient = new(new StubHttpMessageHandler())
-		{
-			BaseAddress = new Uri("https://api.sync.logitech.com/v1/")
-		};
-		httpClient.DefaultRequestHeaders.Add("X-Test-Header", "test-value");
-
-		LogitechSyncClient client = new(httpClient, new LogitechSyncClientOptions());
-
-		Assert.NotNull(client.Places);
+		client.Places.Should().NotBeNull();
 	}
 
 	[Theory]
@@ -78,7 +34,8 @@ public sealed class BasicTests
 	[InlineData("DELETE")]
 	public async Task AuthenticatedHandler_BlocksWriteMethodsWhenReadOnly(string method)
 	{
-		AuthenticatedHttpHandler handler = new(new LogitechSyncClientOptions { IsWritePermitted = false })
+		using var cert = CreateTestCertificate();
+		AuthenticatedHttpHandler handler = new(CreateOptions(cert, isWritePermitted: false))
 		{
 			InnerHandler = new StubHttpMessageHandler()
 		};
@@ -86,65 +43,75 @@ public sealed class BasicTests
 
 		HttpRequestMessage request = new(new HttpMethod(method), "https://example.test/resource");
 
-		Task<HttpResponseMessage> act() => invoker.SendAsync(request, CancellationToken.None);
+		Func<Task<HttpResponseMessage>> act = () => invoker.SendAsync(request, CancellationToken.None);
 
-		InvalidOperationException ex = await Assert.ThrowsAsync<InvalidOperationException>(act);
-		Assert.Contains("Write operations are not permitted", ex.Message);
+		var ex = await act.Should().ThrowAsync<InvalidOperationException>();
+		ex.Which.Message.Should().Contain("Write operations are not permitted");
 	}
 
 	[Fact]
 	public async Task AuthenticatedHandler_AllowsGetWhenReadOnly()
 	{
-		AuthenticatedHttpHandler handler = new(new LogitechSyncClientOptions { IsWritePermitted = false })
+		using var cert = CreateTestCertificate();
+		AuthenticatedHttpHandler handler = new(CreateOptions(cert, isWritePermitted: false))
 		{
 			InnerHandler = new StubHttpMessageHandler()
 		};
 		using HttpMessageInvoker invoker = new(handler);
 
-		HttpRequestMessage request = new(HttpMethod.Get, "https://example.test/resource");
-		HttpResponseMessage response = await invoker.SendAsync(request, CancellationToken.None);
+		var request = new HttpRequestMessage(HttpMethod.Get, "https://example.test/resource");
+		var response = await invoker.SendAsync(request, CancellationToken.None);
 
-		Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+		response.StatusCode.Should().Be(HttpStatusCode.OK);
 	}
 
 	[Fact]
 	public async Task AuthenticatedHandler_AllowsWriteWhenPermitted()
 	{
-		AuthenticatedHttpHandler handler = new(new LogitechSyncClientOptions { IsWritePermitted = true })
+		using var cert = CreateTestCertificate();
+		AuthenticatedHttpHandler handler = new(CreateOptions(cert, isWritePermitted: true))
 		{
 			InnerHandler = new StubHttpMessageHandler()
 		};
 		using HttpMessageInvoker invoker = new(handler);
 
-		HttpRequestMessage request = new(HttpMethod.Post, "https://example.test/resource");
-		HttpResponseMessage response = await invoker.SendAsync(request, CancellationToken.None);
+		var request = new HttpRequestMessage(HttpMethod.Post, "https://example.test/resource");
+		var response = await invoker.SendAsync(request, CancellationToken.None);
 
-		Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+		response.StatusCode.Should().Be(HttpStatusCode.OK);
 	}
 
 	[Fact]
 	public async Task AuthenticatedHandler_ThrowsWhenRequestIsNull()
 	{
-		TestableAuthenticatedHttpHandler handler = new(new LogitechSyncClientOptions());
+		using var cert = CreateTestCertificate();
+		TestableAuthenticatedHttpHandler handler = new(CreateOptions(cert));
 
-		await Assert.ThrowsAsync<ArgumentNullException>(() => handler.InvokeSendAsync(null, CancellationToken.None));
+		Func<Task> act = () => handler.InvokeSendAsync(null, CancellationToken.None);
+
+		await act.Should().ThrowAsync<ArgumentNullException>();
 	}
 
 	[Fact]
 	public void AuthenticatedHandler_AcceptsClientCertificate()
 	{
-		using X509Certificate2 cert = CreateTestCertificate();
-		AuthenticatedHttpHandler handler = new(new LogitechSyncClientOptions
-		{
-			ClientCertificate = cert
-		});
+		using var cert = CreateTestCertificate();
+		AuthenticatedHttpHandler handler = new(CreateOptions(cert));
 
-		Assert.IsType<HttpClientHandler>(handler.InnerHandler);
+		handler.InnerHandler.Should().BeOfType<HttpClientHandler>();
 	}
+
+	private static LogitechSyncClientOptions CreateOptions(X509Certificate2 certificate, bool isWritePermitted = false) => new()
+	{
+		Certificate = certificate,
+		PrivateKey = "test-private-key",
+		IsWritePermitted = isWritePermitted,
+		Logger = Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance
+	};
 
 	private static X509Certificate2 CreateTestCertificate()
 	{
-		using RSA rsa = RSA.Create(2048);
+		using var rsa = RSA.Create(2048);
 		CertificateRequest request = new("CN=LogitechApiTests", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 		return request.CreateSelfSigned(DateTimeOffset.UtcNow.AddDays(-1), DateTimeOffset.UtcNow.AddDays(1));
 	}
@@ -152,12 +119,10 @@ public sealed class BasicTests
 	private sealed class StubHttpMessageHandler : HttpMessageHandler
 	{
 		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-		{
-			return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+			=> Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
 			{
 				RequestMessage = request
 			});
-		}
 	}
 
 	private sealed class TestableAuthenticatedHttpHandler : AuthenticatedHttpHandler
@@ -168,9 +133,6 @@ public sealed class BasicTests
 			InnerHandler = new StubHttpMessageHandler();
 		}
 
-		public Task<HttpResponseMessage> InvokeSendAsync(HttpRequestMessage? request, CancellationToken cancellationToken)
-		{
-			return base.SendAsync(request!, cancellationToken);
-		}
+		public Task<HttpResponseMessage> InvokeSendAsync(HttpRequestMessage? request, CancellationToken cancellationToken) => SendAsync(request!, cancellationToken);
 	}
 }

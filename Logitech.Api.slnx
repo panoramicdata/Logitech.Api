@@ -4,6 +4,17 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="DESIGN.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="PLAN.md" />
+    <File Path="README.md" />
+  </Folder>
   <Project Path="Logitech.Api.Test/Logitech.Api.Test.csproj" />
   <Project Path="Logitech.Api/Logitech.Api.csproj" />
 </Solution>

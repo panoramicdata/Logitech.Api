@@ -1,17 +1,31 @@
-using Logitech.Api.Data;
-using Microsoft.Extensions.Logging.Abstractions;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text.Json;
-using Xunit;
 
 namespace Logitech.Api.Test;
 
 public sealed class ModelCoverageTests
 {
+	[Fact]
+	public void PlaceRequest_HoldsExpectedValues()
+	{
+		PlaceRequest request = new()
+		{
+			Continuation = "cont-token",
+			Limit = 25,
+			Rooms = true,
+			Desks = false,
+			Unlicensed = true,
+			Projection = "place.info"
+		};
+
+		request.Continuation.Should().Be("cont-token");
+		request.Limit.Should().Be(25);
+		request.Rooms.Should().BeTrue();
+		request.Desks.Should().BeFalse();
+		request.Unlicensed.Should().BeTrue();
+		request.Projection.Should().Be("place.info");
+	}
+
 	[Fact]
 	public void AllPublicModels_HaveWorkingGettersAndSetters()
 	{
@@ -31,29 +45,30 @@ public sealed class ModelCoverageTests
 			typeof(Peripheral),
 			typeof(PeripheralCount),
 			typeof(PlaceContract),
+			typeof(PlaceRequest),
 			typeof(PlaceResponse),
 			typeof(Room)
 		];
 
-		foreach (Type modelType in modelTypes)
+		foreach (var modelType in modelTypes)
 		{
-			object instance = Activator.CreateInstance(modelType)!;
+			var instance = Activator.CreateInstance(modelType)!;
 			ExerciseProperties(instance);
 		}
 	}
 
 	private static void ExerciseProperties(object instance)
 	{
-		PropertyInfo[] properties = instance
+		var properties = instance
 			.GetType()
 			.GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
-		int seed = 1;
-		foreach (PropertyInfo property in properties)
+		var seed = 1;
+		foreach (var property in properties)
 		{
 			if (property.CanWrite)
 			{
-				object? value = CreateValue(property.PropertyType, seed);
+				var value = CreateValue(property.PropertyType, seed);
 				if (value is not null)
 				{
 					property.SetValue(instance, value);
@@ -67,7 +82,7 @@ public sealed class ModelCoverageTests
 
 	private static object? CreateValue(Type type, int seed)
 	{
-		Type? nullableUnderlying = Nullable.GetUnderlyingType(type);
+		var nullableUnderlying = Nullable.GetUnderlyingType(type);
 		if (nullableUnderlying is not null)
 		{
 			return CreateValue(nullableUnderlying, seed);
@@ -100,20 +115,20 @@ public sealed class ModelCoverageTests
 
 		if (type == typeof(JsonElement))
 		{
-			using JsonDocument document = JsonDocument.Parse("{\"sample\":1}");
+			using var document = JsonDocument.Parse("{\"sample\":1}");
 			return document.RootElement.Clone();
 		}
 
 		if (type == typeof(Microsoft.Extensions.Logging.ILogger))
 		{
-			return NullLogger.Instance;
+			return Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
 		}
 
 		if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
 		{
-			Type elementType = type.GetGenericArguments()[0];
-			IList list = (IList)Activator.CreateInstance(type)!;
-			object? element = CreateValue(elementType, seed + 100);
+			var elementType = type.GetGenericArguments()[0];
+			var list = (IList)Activator.CreateInstance(type)!;
+			var element = CreateValue(elementType, seed + 100);
 			if (element is not null)
 			{
 				list.Add(element);
@@ -124,7 +139,7 @@ public sealed class ModelCoverageTests
 
 		if (type.IsClass)
 		{
-			ConstructorInfo? ctor = type.GetConstructor(Type.EmptyTypes);
+			var ctor = type.GetConstructor(Type.EmptyTypes);
 			return ctor is not null ? Activator.CreateInstance(type) : null;
 		}
 

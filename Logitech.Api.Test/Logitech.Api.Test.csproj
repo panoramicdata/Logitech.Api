@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <UserSecretsId>94789d4f-382d-4a6c-a365-3202df7916a5</UserSecretsId>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.v3" />
@@ -17,9 +16,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Logitech.Api\Logitech.Api.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Folder Include="TestResults\" />
+  </ItemGroup>
 </Project>
