@@ -20,8 +20,11 @@ if ($behind -gt 0) {
 	exit 1
 }
 
+# Restore local tools so Nerdbank.GitVersioning is available
+dotnet tool restore
+
 # Get version from Nerdbank.GitVersioning
-$versionJson = nbgv get-version -f json | ConvertFrom-Json
+$versionJson = dotnet nbgv get-version -f json | ConvertFrom-Json
 $version = $versionJson.NuGetPackageVersion
 Write-Host "Version: $version"
 
