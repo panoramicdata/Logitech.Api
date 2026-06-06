@@ -1,0 +1,14 @@
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\bin\Debug\net10.0\Logitech.Api.deps.json
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\bin\Debug\net10.0\Logitech.Api.dll
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\bin\Debug\net10.0\Logitech.Api.pdb
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.csproj.AssemblyReference.cache
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.AssemblyInfoInputs.cache
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.AssemblyInfo.cs
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.csproj.CoreCompileInputs.cache
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.dll
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\refint\Logitech.Api.dll
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.pdb
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\ref\Logitech.Api.dll
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\bin\Debug\net10.0\Logitech.Api.xml
+C:\Users\david\source\repos\panoramicdata\Logitech.Api\Logitech.Api\obj\Debug\net10.0\Logitech.Api.xml

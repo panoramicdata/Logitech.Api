@@ -1,0 +1,933 @@
+openapi: 3.1.0
+
+info:
+  title: Sync Cloud API
+  version: 0.1.4
+  description: |-
+    ## Access
+    * This API requires a valid Select, Essential or Sync Plus license
+    * This API uses mTLS for authentication. Please generate a certificate above
+
+    ## Throttling
+    * You can send at most 14,400 requests per day. This translates to an average of 10 requests per minute.
+    * Maximum allowed sustained rate is 1 request per second.
+    * Maximum allowed burst rate is 10 requests per second.
+
+    You should implement retries with exponential backoff for throttled requests.
+
+    ## Changelog
+    ### 0.1.4
+    - added `unlicensed` query parameter to include basic information about unlicensed rooms and desks in the response
+
+    ### 0.1.3
+    - return room contract and device warranty information if available
+
+    ### 0.1.2
+    - return 'seatCount' field for all rooms
+
+    ### 0.1.1
+    - return 'location' field for all rooms
+
+    ### 0.1.0
+    - added health and environmental data from Spot and Rally Board 65 devices
+    - added new query-string parameters, allowing for improved query performance by filtering unwanted data from the response
+
+    ### 0.0.3
+    - added device health status
+    - added 'InUse' device status value
+    - added Mic Pod Hub, Table Hub, Display Hub and Speaker peripheral counts to Rally devices
+
+    ### 0.0.2
+    - added device network info
+
+    ### 0.0.1
+    - initial release
+
+servers:
+  - url: https://api.sync.logitech.com/v1
+
+paths:
+  /org/{orgId}/place:
+    get:
+      summary: Get all organization's rooms, desks, and devices
+      description: |-
+        By default, only rooms and desks with valid Select, Essential or Sync Plus licenses are returned.
+
+        Use the `unlicensed` query parameter to include unlicensed places in the response. Unlicensed places will only return basic information fields.
+      tags:
+        - Places
+      parameters:
+        - name: orgId
+          in: path
+          description: Your organization ID
+          required: true
+          schema:
+            type: string
+            example: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc
+        - name: continuation
+          in: query
+          description: Returned by previous API call if there are more results to fetch
+          required: false
+          schema:
+            type: string
+            example: eyJvcmdJZCI6IjJVYk1JSlk0VGhLZXBaeTlkS1c5VkpJVU5JV21aYTZLIiwicmVhbG1ncm91cCI6IlJvb21zLS8vIiwiaWQiOiIyVWJNSUpZNFRoS2VwWnk5ZEtXOVZKSVVOSVdtWmE2Sy1SSXFFQTN0aGNXeUdLMnJpVlNCdHFuVzdiYUdtYmxncSJ9
+        - name: limit
+          in: query
+          description: 'Maximum number of results to return. This API may return fewer results than this (default: 1000)'
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            example: 10
+        - name: rooms
+          in: query
+          description: Get all rooms in the organization
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: desks
+          in: query
+          description: Get all desks in the organization
+          required: false
+          schema:
+            type: boolean
+            default: true
+        - name: unlicensed
+          in: query
+          description: |-
+            Include unlicensed rooms and desks in the response. Unlicensed places return basic information: `id`, `type`, `name`, `group`, `location`, `license`/`contract`, and `createdAt`.
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: projection
+          in: query
+          description: |-
+            Comma-separated list of fields to include in the response.
+
+            Usage:
+            - Passing an empty string is allowed and results in only the place `id` field being returned.
+            - If unknown values are provided, the request will fail with status code 400.
+            - To retrieve nested fields such as `place.device.info`, the parent field (`place.device`) should also be included.
+            - For optimal performance, only required fields should be specified in the `projection` parameter. Requesting unnecessary fields can significantly increase response times and payload size.
+
+            Supported values:
+            - `place.info` - Include place details (`type`, `name`, `group`, `location`, `seatCount`, `createdAt`)
+            - `place.occupancy` - Include live occupancy in rooms
+            - `place.contract` - Include contract or license information for rooms/desks (if available)
+            - `place.device` - Get all devices within each place
+            - `place.device.info` - Include device details (`type`, `name`, `version`, `serial`, `peripherals`, `network`, `createdAt`)
+            - `place.device.status` - Include device status (`status`, `healthStatus`, `lastSeen`)
+            - `place.device.sensors` - Include live sensor measurements from Spot and Rally Board 65 devices
+            - `place.device.warranty` - Include device warranty information (if available)
+          required: false
+          schema:
+            type: string
+            default: place.info,place.occupancy,place.device,place.device.info,place.device.status
+          example: place.info,place.device,place.device.sensors
+      responses:
+        '200':
+          description: A list of places within the organization
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  places:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/Room'
+                        - $ref: '#/components/schemas/Desk'
+                  continuation:
+                    type: string
+                    description: Provide as a query string parameter to a subsequent API call to fetch the next page of results. Defined if there are more results to fetch
+                required: [places]
+              examples:
+                Get Places - Response 1:
+                  $ref: '#/components/examples/Get Places - Response 1'
+                Get Places - Response 2:
+                  $ref: '#/components/examples/Get Places - Response 2'
+                Get Places - Response 3:
+                  $ref: '#/components/examples/Get Places - Response 3'
+                Get Places - Response 4:
+                  $ref: '#/components/examples/Get Places - Response 4'
+                Get Places - Response 5:
+                  $ref: '#/components/examples/Get Places - Response 5'
+        '400':
+          description: Bad Request - Invalid query-string parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    enum: [400]
+                  message:
+                    type: string
+                    enum: [BadRequest]
+                required: [statusCode, message]
+              example:
+                statusCode: 400
+                message: BadRequest
+        '403':
+          description: Forbidden - Your organization is not Logitech Select enabled or your client certificate is either expired or deactivated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    enum: [403]
+                  message:
+                    type: string
+                    enum: [Forbidden]
+                required: [statusCode, message]
+              example:
+                statusCode: 403
+                message: Forbidden
+        '429':
+          description: Too Many Requests - You have exceeded your request quota, please try again later
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    enum: [429]
+                  message:
+                    type: string
+                    enum: [Too Many Requests]
+                required: [statusCode, message]
+              example:
+                statusCode: 429
+                message: Too Many Requests
+
+components:
+  schemas:
+    Room:
+      type: object
+      title: Room
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        type:
+          type: string
+          enum: [Room]
+        name:
+          type: string
+          description: Room name
+        group:
+          type: string
+          description: Room group
+        location:
+          type: string
+          description: Room location
+        seatCount:
+          type: integer
+          description: Number of seats in the room. Returns 0 if not set.
+        occupancy:
+          type: integer
+          description: Number of people in the room.
+        contract:
+          $ref: '#/components/schemas/PlaceContract'
+          description: Contract information for the room.
+        license:
+          type: string
+          description: License assigned to the room. Mutually exclusive with `contract`
+          enum: [Select, SyncPlus, Essential, Core, Expanded, Advanced]
+        devices:
+          type: array
+          description: Devices associated with this room.
+          items:
+            anyOf:
+              - $ref: '#/components/schemas/LogitechDevice'
+              - $ref: '#/components/schemas/ComputerDevice'
+              - $ref: '#/components/schemas/GenericDevice'
+        createdAt:
+          type: integer
+          description: Epoch timestamp representing the time of creation in Sync
+      required: [id]
+
+    Desk:
+      type: object
+      title: Desk
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        type:
+          type: string
+          enum: [Desk]
+        name:
+          type: string
+          description: Desk name
+        location:
+          type: string
+          description: Desk location
+        contract:
+          $ref: '#/components/schemas/PlaceContract'
+          description: Contract information for the desk.
+        license:
+          type: string
+          description: License assigned to the desk. Mutually exclusive with `contract`
+          enum: [Select, SyncPlus, Essential, Core, Expanded, Advanced]
+        devices:
+          type: array
+          description: Devices associated with this desk.
+          items:
+            anyOf:
+              - type: object # not using `$ref: '#/components/schemas/LogitechDevice'` to provide Desk-specific overrides
+                title: LogitechDevice
+                properties:
+                  id:
+                    type: string
+                    description: Unique identifier
+                  type:
+                    type: string
+                    enum: [Logitech]
+                  name:
+                    type: string
+                    description: Logitech product name
+                  version:
+                    type: string
+                    description: CollabOS or firmware version
+                  serial:
+                    type: string
+                    description: Defined for Logi Dock Flex only
+                  status:
+                    type: string
+                    enum: [Offline, Online, InUse]
+                    description: A device is 'Offline' if it lost its connection to Sync or is unplugged. A device is 'InUse' if there is a user currently at the desk.
+                  healthStatus:
+                    type: string
+                    enum: [NoIssues, Warning, Error]
+                    description: Health status of the device
+                  warranty:
+                    $ref: '#/components/schemas/DeviceWarranty'
+                  createdAt:
+                    type: integer
+                    description: Epoch timestamp representing the time of creation in Sync
+                required: [id, type, name, version, status, healthStatus, createdAt]
+              - $ref: '#/components/schemas/GenericDevice'
+        createdAt:
+          type: integer
+          description: Epoch timestamp representing the time of creation in Sync
+      required: [id]
+
+    DeviceNetworkConfig:
+      type: object
+      nullable: true
+      description: Network configuration for a network interface or null if it is disabled. If the device doesn't report this information at all, this field will be omitted.
+      properties:
+        mode:
+          type: string
+          enum: [auto, dhcp, manual, none]
+          example: 'dhcp'
+        address:
+          type: string
+          description: an IP address; rarely available
+          example: '192.168.1.100'
+        gateway:
+          type: string
+          example: '192.168.1.1'
+        subnetMask:
+          type: string
+          example: '255.255.255.0'
+        dns:
+          type: array
+          items:
+            type: string
+            example: '8.8.8.8'
+      required: [mode, address, gateway, subnetMask, dns]
+
+    PlaceContract:
+      type: object
+      description: Contract information for a room or desk. Mutually exclusive with `license`
+      properties:
+        service:
+          type: string
+          enum:
+            [
+              SelectRoom,
+              SelectPartner,
+              SelectSmallRoom,
+              SelectDesk,
+              SelectEnterprise,
+              EssentialDesk,
+              EssentialRoom,
+              SyncPlus,
+              ExtendedWarranty,
+              PartnerCore,
+              PartnerCoreSmallRoom,
+              PartnerExpanded,
+              PartnerExpandedSmallRoom,
+              PartnerAdvanced,
+              PartnerAdvancedSmallRoom,
+            ]
+          description: The type of service contract
+          example: SelectRoom
+        name:
+          type: string
+          description: Display name of the contract
+          example: 'Enterprise Contract (#123456)'
+        number:
+          type: integer
+          description: The contract number
+          example: 123456
+        expiresAt:
+          type: integer
+          description: Epoch timestamp representing the contract expiration date
+      required: [service, name, number, expiresAt]
+
+    DeviceWarranty:
+      type: object
+      description: Warranty information for a device.
+      properties:
+        type:
+          type: string
+          enum:
+            [
+              StandardWarranty,
+              SelectRoom,
+              SelectPartner,
+              SelectSmallRoom,
+              SelectDesk,
+              SelectEnterprise,
+              EssentialDesk,
+              EssentialRoom,
+              SyncPlus,
+              ExtendedWarranty,
+              PartnerCore,
+              PartnerCoreSmallRoom,
+              PartnerExpanded,
+              PartnerExpandedSmallRoom,
+              PartnerAdvanced,
+              PartnerAdvancedSmallRoom,
+            ]
+          description: The type of warranty coverage
+          example: StandardWarranty
+        expiresAt:
+          type: integer
+          description: Epoch timestamp representing the warranty expiration date
+      required: [type]
+
+    ComputerDeviceNetwork:
+      type: object
+      description: Network configuration for a device. If the device doesn't report this information at all, this field will be omitted.
+      properties:
+        ip:
+          type: string
+          example: '192.168.1.100'
+        mac:
+          type: string
+          example: 'D8:BB:C1:00:00:01'
+      required: [ip, mac]
+
+    DeviceNetwork:
+      type: object
+      description: Network configuration for a device. If the device doesn't report this information at all, this field will be omitted.
+      properties:
+        ip:
+          type: string
+          description: an IP address; omitted if not reported by the device
+          example: '192.168.1.100'
+        mac:
+          type: string
+          description: a MAC address of the network interface; omitted if not reported by the device
+          example: 'D8:BB:C1:00:00:01'
+        hostName:
+          type: string
+          description: Hostname of the device; available for some devices, omitted for others
+          example: 'RallyBar-IFRB2'
+        wired:
+          $ref: '#/components/schemas/DeviceNetworkConfig'
+        wireless:
+          $ref: '#/components/schemas/DeviceNetworkConfig'
+      required: [ip, mac, hostName, wired, wireless]
+
+    PeripheralCount:
+      type: object
+      properties:
+        expected:
+          type: integer
+          description: Expected number of this peripheral in the room
+        actual:
+          type: integer
+          description: Actual number of this peripheral currently in the room
+      required: [expected, actual]
+
+    DeviceSensors:
+      type: object
+      description: Live sensor measurements from the device. Available for Spot and Rally Board 65 devices only.
+      properties:
+        latestTs:
+          type: integer
+          description: Epoch timestamp of the latest sensor reading
+        co2:
+          type: integer
+          description: CO2 concentration (ppm)
+        pressure:
+          type: integer
+          description: Atmospheric pressure (Pa)
+        temperature:
+          type: number
+          description: Temperature (°C)
+        humidity:
+          type: number
+          description: Relative humidity (%)
+        tvoc:
+          type: integer
+          description: Spot only - Total volatile organic compounds (µg/m³)
+        vocIndex:
+          type: integer
+          description: Rally Bar 65 only - VOC index
+        pm10:
+          type: integer
+          description: Particulate matter (PM10) (µg/m³)
+        pm25:
+          type: integer
+          description: Particulate matter (PM2.5) (µg/m³)
+        presence:
+          type: integer
+          description: Spot only - Presence detection
+          enum: [0, 1]
+
+    LogitechDevice:
+      type: object
+      title: LogitechDevice
+      description: A device manufactured by Logitech
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        type:
+          type: string
+          enum: [Logitech]
+        name:
+          type: string
+          description: Logitech product name
+        version:
+          type: string
+          description: CollabOS or firmware version
+        serial:
+          type: string
+          description: Defined for CollabOS devices and a few other Logitech devices, such as Rally
+        status:
+          type: string
+          enum: [Offline, Online, InUse]
+          description: A device is 'Offline' if it lost its connection to Sync or is unplugged. A device is 'InUse' if it is currently in a meeting.
+        healthStatus:
+          type: string
+          enum: [NoIssues, Warning, Error]
+          description: Health status of the device
+        peripherals:
+          type: object
+          description: Defined for some Logitech devices, such as Rally Bar, Rally Bar Mini, RoomMate, Rally
+          properties:
+            camera:
+              type: object
+              description: Defined for some Logitech devices, such as Rally Bar, Rally Bar Mini, RoomMate, Rally
+              properties:
+                count:
+                  $ref: '#/components/schemas/PeripheralCount'
+            speaker:
+              type: object
+              description: Defined for Rally devices only
+              properties:
+                count:
+                  $ref: '#/components/schemas/PeripheralCount'
+            displayHub:
+              type: object
+              description: Defined for Rally devices only
+              properties:
+                count:
+                  $ref: '#/components/schemas/PeripheralCount'
+            tableHub:
+              type: object
+              description: Defined for Rally devices only
+              properties:
+                count:
+                  $ref: '#/components/schemas/PeripheralCount'
+            micPod:
+              type: object
+              description: Defined for some Logitech devices, such as Rally Bar, Rally Bar Mini, RoomMate, Rally
+              properties:
+                count:
+                  $ref: '#/components/schemas/PeripheralCount'
+            micPodHub:
+              type: object
+              description: Defined for some Logitech devices, such as Rally Bar, Rally Bar Mini, RoomMate, Rally
+              properties:
+                count:
+                  $ref: '#/components/schemas/PeripheralCount'
+        network:
+          $ref: '#/components/schemas/DeviceNetwork'
+        sensors:
+          $ref: '#/components/schemas/DeviceSensors'
+        warranty:
+          $ref: '#/components/schemas/DeviceWarranty'
+        lastSeen:
+          type: integer
+          description: Epoch timestamp representing the time of the last disconnection event
+        createdAt:
+          type: integer
+          description: Epoch timestamp representing the time of creation in Sync
+      required: [id, type, name, version, status, healthStatus, lastSeen, createdAt]
+
+    ComputerDevice:
+      type: object
+      title: ComputerDevice
+      description: A PC, such as the Intel NUC, running Sync App
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        type:
+          type: string
+          enum: [Computer]
+        name:
+          type: string
+          description: Computer name
+        version:
+          type: string
+          description: Sync App version
+        status:
+          type: string
+          enum: [Offline, Online, InUse]
+          description: A device is 'Offline' if it lost its connection to Sync or is unplugged. A device is 'InUse' if it is currently in a meeting.
+        healthStatus:
+          type: string
+          enum: [NoIssues, Warning, Error]
+          description: Health status of the device
+        network:
+          $ref: '#/components/schemas/ComputerDeviceNetwork'
+        lastSeen:
+          type: integer
+          description: Epoch timestamp representing the time of the last disconnection event
+        createdAt:
+          type: integer
+          description: Epoch timestamp representing the time of creation in Sync
+      required: [id, type, name, version, status, healthStatus, network, lastSeen, createdAt]
+
+    GenericDevice:
+      type: object
+      title: GenericDevice
+      description: Any other non-Logitech peripheral
+      properties:
+        id:
+          type: string
+          description: Unique identifier
+        type:
+          type: string
+          enum: [Generic]
+        name:
+          type: string
+          description: Device name
+        version:
+          type: string
+          description: Firmware version
+        status:
+          type: string
+          enum: [Offline, Online, InUse]
+          description: A device is 'Offline' if it lost its connection to Sync or is unplugged. A device is 'InUse' if it is currently in a meeting.
+        healthStatus:
+          type: string
+          enum: [NoIssues, Warning, Error]
+          description: Health status of the device
+        lastSeen:
+          type: integer
+          description: Epoch timestamp representing the time of the last disconnection event
+        createdAt:
+          type: integer
+          description: Epoch timestamp representing the time of creation in Sync
+      required: [id, type, name, status, healthStatus, lastSeen, createdAt]
+
+  examples:
+    Get Places - Response 1:
+      summary: Room and Desk with continuation
+      value:
+        places:
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w8563A
+            type: Room
+            name: Large Room 5
+            group: /US/California/San Francisco/Headquarters/
+            location: /Main Campus/Building A/Floor 13/Green Area/
+            seatCount: 12
+            occupancy: 0
+            contract:
+              service: SelectRoom
+              name: 'Select Room Contract (#987654)'
+              number: 987654
+              expiresAt: 1748832000000
+            devices:
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85631
+                type: Computer
+                name: DESKTOP-PW8ZH
+                version: 3.3.176
+                status: Online
+                healthStatus: NoIssues
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85632
+                type: Logitech
+                name: Rally
+                version: 1.2.69
+                status: Online
+                healthStatus: Warning
+                peripherals:
+                  camera:
+                    count:
+                      actual: 1
+                      expected: 1
+                  micPod:
+                    count:
+                      actual: 1
+                      expected: 2
+                  micPodHub:
+                    count:
+                      actual: 1
+                      expected: 1
+                  speaker:
+                    count:
+                      actual: 2
+                      expected: 2
+                  tableHub:
+                    count:
+                      actual: 1
+                      expected: 1
+                  displayHub:
+                    count:
+                      actual: 1
+                      expected: 1
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85637
+                type: Logitech
+                name: Spot
+                version: 1.0.5
+                status: Online
+                healthStatus: NoIssues
+                sensors:
+                  latestTs: 1717200120000
+                  co2: 650
+                  pressure: 101325
+                  temperature: 22.5
+                  humidity: 45.2
+                  tvoc: 180
+                  pm10: 5
+                  pm25: 3
+                  presence: 1
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+            createdAt: 1717200000000
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w8563B
+            type: Desk
+            name: Desk 13
+            location: /Main Campus/Building A/Floor 13/Green Area/
+            contract:
+              service: SelectDesk
+              name: 'Select Desk Contract (#987654)'
+              number: 987654
+              expiresAt: 1748832000000
+            devices:
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85634
+                type: Logitech
+                name: Logi Dock Flex
+                version: 1.12.252
+                status: Online
+                healthStatus: NoIssues
+                warranty:
+                  type: SelectDesk
+                  expiresAt: 1759852800000
+                network:
+                  ip: 10.11.16.237
+                  mac: 44:73:d6:b4:97:90
+                  hostName: DockFlex-30VV78
+                  wired:
+                    mode: dhcp
+                    address: 10.11.16.237
+                    gateway: 10.11.16.1
+                    subnetMask: 255.255.254.0
+                    dns:
+                      - 10.11.16.7
+                      - 1.1.1.1
+                  wireless: null
+                lastSeen: 1717200121230
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85635
+                type: Logitech
+                name: Brio 505
+                status: Online
+                healthStatus: NoIssues
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85636
+                type: Generic
+                name: USB Keyboard
+                status: Offline
+                healthStatus: Error
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+            createdAt: 1717200000000
+        continuation: eyJvcmdJZCI6IjJVYk1JSlk0VGhLZXBaeTlkS1c5VkpJVU5JV21aYTZLIiwicmVhbG1ncm91cCI6IlJvb21zLS8vIiwiaWQiOiIyVWJNSUpZNFRoS2VwWnk5ZEtXOVZKSVVOSVdtWmE2Sy1SSXFFQTN0aGNXeUdLMnJpVlNCdHFuVzdiYUdtYmxncSJ9
+    Get Places - Response 2:
+      summary: Offline room with a Computer
+      value:
+        places:
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w8563A
+            type: Room
+            name: Small Room 1
+            group: /US/California/San Francisco/Headquarters/
+            location: /
+            seatCount: 4
+            occupancy: 0
+            license: Select
+            devices:
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85631
+                type: Computer
+                name: DESKTOP-PW8QH
+                version: 3.3.176
+                status: Offline
+                healthStatus: Error
+                network:
+                  ip: 10.128.210.244
+                  mac: 54:05:db:ac:34:82
+                lastSeen: 1717200060000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85632
+                type: Logitech
+                name: Tap
+                version: 1.0.10
+                status: Offline
+                healthStatus: Error
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85633
+                type: Generic
+                name: BCC950
+                status: Offline
+                healthStatus: Error
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+            createdAt: 1717200000000
+    Get Places - Response 3:
+      summary: Room with a Rally Bar and 8 people in a meeting
+      value:
+        places:
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w8563A
+            type: Room
+            name: Boardroom
+            group: /
+            location: /
+            seatCount: 0
+            occupancy: 8
+            devices:
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85631
+                type: Logitech
+                name: Rally Bar
+                version: 1.12.252
+                serial: 2685Y5O4TW98
+                status: InUse
+                healthStatus: NoIssues
+                peripherals:
+                network:
+                  micPod:
+                    count:
+                      expected: 2
+                      actual: 2
+                  ip: 192.168.10.26
+                  mac: 44:73:d6:c7:42:45
+                  hostName: RallyBar-1L5V32
+                  wired:
+                    mode: dhcp
+                    address: 192.168.10.26
+                    gateway: 192.168.10.1
+                    subnetMask: 255.255.255.0
+                    dns:
+                      - 192.168.10.1
+                  wireless: null
+                warranty:
+                  type: StandardWarranty
+                lastSeen: 1717200123000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85632
+                type: Logitech
+                name: Tap IP
+                version: 1.12.252
+                serial: 2685Y5O4TP98
+                status: InUse
+                healthStatus: NoIssues
+                warranty:
+                  type: StandardWarranty
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85633
+                type: Logitech
+                name: Sight
+                version: 1.12.252
+                serial: 2685Y5O4TQ98
+                status: InUse
+                healthStatus: NoIssues
+                warranty:
+                  type: StandardWarranty
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+            createdAt: 1717200000000
+    Get Places - Response 4:
+      summary: Minimal response with all detail fields excluded
+      value:
+        places:
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w8563A
+            devices:
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85631
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85632
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w8563B
+            devices:
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-ZbcvQczuCfIaV0NL48dp5QOIQ1w85634
+    Get Places - Response 5:
+      summary: Licensed and unlicensed rooms
+      value:
+        places:
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-RhT3N8qXsKpQv2FmZcYwLaE4
+            type: Room
+            name: Training Room (Unlicensed)
+            group: /US/California/San Francisco/
+            location: /Building B/Floor 2/
+            createdAt: 1717200000000
+          - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-DbW7MpLsHcVnX9GtKfYrPaJ5
+            type: Room
+            name: Executive Boardroom (Licensed)
+            group: /US/California/San Francisco/
+            location: /Building A/Floor 5/
+            seatCount: 12
+            occupancy: 3
+            contract:
+              service: SelectRoom
+              name: 'Select Room Contract (#123456)'
+              number: 123456
+              expiresAt: 1748832000000
+            devices:
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-DbW7MpLsHcVnX9GtKfYrPaJ51
+                type: Logitech
+                name: Sight
+                version: 2.0.102
+                status: Online
+                healthStatus: NoIssues
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+              - id: WMrRZ6GpCHjmrKQSpzd2z5Fz62JtelFc-DbW7MpLsHcVnX9GtKfYrPaJ52
+                type: Logitech
+                name: Rally Bar
+                version: 2.0.105
+                status: InUse
+                healthStatus: NoIssues
+                lastSeen: 1717200000000
+                createdAt: 1717200000000
+            createdAt: 1717200000000

@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "Logitech.Api.sln",
+    "projects": [
+      "Logitech.Api\\Logitech.Api.csproj",
+      "Logitech.Api.Test\\Logitech.Api.Test.csproj"
+    ]
+  }
+}

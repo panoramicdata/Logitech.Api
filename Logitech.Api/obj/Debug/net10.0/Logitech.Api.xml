@@ -1,0 +1,437 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Logitech.Api</name>
+    </assembly>
+    <members>
+        <member name="T:Logitech.Api.AuthenticatedHttpHandler">
+            <summary>
+            Delegating handler that enforces write-protection and applies mTLS certificate configuration.
+            </summary>
+        </member>
+        <member name="M:Logitech.Api.AuthenticatedHttpHandler.#ctor(Logitech.Api.LogitechSyncClientOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Logitech.Api.AuthenticatedHttpHandler"/> class.
+            </summary>
+            <param name="options">Client options controlling certificate usage and write permissions.</param>
+        </member>
+        <member name="M:Logitech.Api.AuthenticatedHttpHandler.SendAsync(System.Net.Http.HttpRequestMessage,System.Threading.CancellationToken)">
+            <summary>
+            Sends an HTTP request after validating write-permission policy.
+            </summary>
+            <param name="request">The request message.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>The HTTP response.</returns>
+        </member>
+        <member name="T:Logitech.Api.Data.ComputerDevice">
+            <summary>
+            Represents a computer device (for example, a room PC running Sync App).
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.Id">
+            <summary>Unique identifier.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.Type">
+            <summary>Device type.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.Name">
+            <summary>Device name.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.Version">
+            <summary>Software version.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.Status">
+            <summary>Operational status.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.HealthStatus">
+            <summary>Health status.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.Network">
+            <summary>Network details, when available.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.LastSeen">
+            <summary>Last seen timestamp (epoch milliseconds).</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDevice.CreatedAt">
+            <summary>Creation timestamp in Sync (epoch milliseconds).</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.ComputerDeviceNetwork">
+            <summary>
+            Basic network information for a computer device.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDeviceNetwork.Ip">
+            <summary>IP address.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.ComputerDeviceNetwork.Mac">
+            <summary>MAC address.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.Desk">
+            <summary>
+            Represents a desk place in Logitech Sync.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.Id">
+            <summary>Unique identifier.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.Type">
+            <summary>Place type.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.Name">
+            <summary>Desk name.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.Location">
+            <summary>Desk location.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.Contract">
+            <summary>Contract details, when present.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.License">
+            <summary>License identifier, when present.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.Devices">
+            <summary>Associated raw device payloads.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Desk.CreatedAt">
+            <summary>Creation timestamp in Sync (epoch milliseconds).</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.DeviceNetwork">
+            <summary>
+            Detailed network information for a device.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetwork.Ip">
+            <summary>IP address.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetwork.Mac">
+            <summary>MAC address.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetwork.HostName">
+            <summary>Host name.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetwork.Wired">
+            <summary>Wired interface configuration.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetwork.Wireless">
+            <summary>Wireless interface configuration.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.DeviceNetworkConfig">
+            <summary>
+            Represents network settings for an interface.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetworkConfig.Mode">
+            <summary>Addressing mode (for example dhcp/manual).</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetworkConfig.Address">
+            <summary>Assigned IP address.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetworkConfig.Gateway">
+            <summary>Gateway address.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetworkConfig.SubnetMask">
+            <summary>Subnet mask.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceNetworkConfig.Dns">
+            <summary>DNS server list.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.DeviceSensors">
+            <summary>
+            Live environmental sensor readings for supported devices.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.LatestTs">
+            <summary>Latest sensor timestamp (epoch milliseconds).</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Co2">
+            <summary>CO2 concentration (ppm).</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Pressure">
+            <summary>Atmospheric pressure (Pa).</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Temperature">
+            <summary>Temperature in Celsius.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Humidity">
+            <summary>Relative humidity percentage.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Tvoc">
+            <summary>Total volatile organic compounds.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.VocIndex">
+            <summary>VOC index.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Pm10">
+            <summary>Particulate matter PM10.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Pm25">
+            <summary>Particulate matter PM2.5.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceSensors.Presence">
+            <summary>Presence detection state.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.DeviceWarranty">
+            <summary>
+            Warranty details for a device.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceWarranty.Type">
+            <summary>Warranty or service type.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.DeviceWarranty.ExpiresAt">
+            <summary>Expiration timestamp (epoch milliseconds).</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.GenericDevice">
+            <summary>
+            Represents a non-Logitech peripheral.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.Id">
+            <summary>Unique identifier.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.Type">
+            <summary>Device type.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.Name">
+            <summary>Device name.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.Version">
+            <summary>Firmware or software version.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.Status">
+            <summary>Operational status.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.HealthStatus">
+            <summary>Health status.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.LastSeen">
+            <summary>Last seen timestamp (epoch milliseconds).</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.GenericDevice.CreatedAt">
+            <summary>Creation timestamp in Sync (epoch milliseconds).</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.LogitechDevice">
+            <summary>
+            Represents a Logitech-manufactured device.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Id">
+            <summary>Unique identifier.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Type">
+            <summary>Device type.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Name">
+            <summary>Device name.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Version">
+            <summary>Firmware or CollabOS version.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Serial">
+            <summary>Device serial number, when available.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Status">
+            <summary>Operational status.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.HealthStatus">
+            <summary>Health status.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Peripherals">
+            <summary>Peripheral counts and details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Network">
+            <summary>Network details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Sensors">
+            <summary>Live sensor details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.Warranty">
+            <summary>Warranty information.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.LastSeen">
+            <summary>Last seen timestamp (epoch milliseconds).</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.LogitechDevice.CreatedAt">
+            <summary>Creation timestamp in Sync (epoch milliseconds).</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.Peripherals">
+            <summary>
+            Peripheral containers for Logitech devices.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Peripherals.Camera">
+            <summary>Camera peripheral details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Peripherals.Speaker">
+            <summary>Speaker peripheral details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Peripherals.DisplayHub">
+            <summary>Display hub peripheral details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Peripherals.TableHub">
+            <summary>Table hub peripheral details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Peripherals.MicPod">
+            <summary>Mic pod peripheral details.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Peripherals.MicPodHub">
+            <summary>Mic pod hub peripheral details.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.Peripheral">
+            <summary>
+            A specific peripheral entry.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Peripheral.Count">
+            <summary>Expected and actual counts for this peripheral.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.PeripheralCount">
+            <summary>
+            Expected versus actual peripheral counts.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PeripheralCount.Expected">
+            <summary>Expected count.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PeripheralCount.Actual">
+            <summary>Actual count.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.PlaceContract">
+            <summary>
+            Contract details for a room or desk.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PlaceContract.Service">
+            <summary>Service contract type.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PlaceContract.Name">
+            <summary>Display name of the contract.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PlaceContract.Number">
+            <summary>Contract number.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PlaceContract.ExpiresAt">
+            <summary>Expiration timestamp (epoch milliseconds).</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.PlaceResponse">
+            <summary>
+            Response payload for organization place queries.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PlaceResponse.Places">
+            <summary>Collection of place payloads as raw JSON elements.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.PlaceResponse.Continuation">
+            <summary>Pagination continuation token, when additional pages exist.</summary>
+        </member>
+        <member name="T:Logitech.Api.Data.Room">
+            <summary>
+            Represents a room place in Logitech Sync.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Id">
+            <summary>Unique identifier.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Type">
+            <summary>Place type.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Name">
+            <summary>Room name.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Group">
+            <summary>Room group path.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Location">
+            <summary>Room location path.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.SeatCount">
+            <summary>Configured seat count.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Occupancy">
+            <summary>Current occupancy value.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Contract">
+            <summary>Contract details, when present.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.License">
+            <summary>License identifier, when present.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.Devices">
+            <summary>Associated raw device payloads.</summary>
+        </member>
+        <member name="P:Logitech.Api.Data.Room.CreatedAt">
+            <summary>Creation timestamp in Sync (epoch milliseconds).</summary>
+        </member>
+        <member name="T:Logitech.Api.Interfaces.IPlaces">
+            <summary>
+            Refit contract for place-related Logitech Sync API operations.
+            </summary>
+        </member>
+        <member name="M:Logitech.Api.Interfaces.IPlaces.GetAsync(System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Threading.CancellationToken)">
+            <summary>
+            Gets rooms and desks for an organization, including optional device data.
+            </summary>
+            <param name="orgId">The Logitech Sync organization identifier.</param>
+            <param name="continuation">Pagination token returned by a previous call.</param>
+            <param name="limit">Maximum number of results to return, between 1 and 1000.</param>
+            <param name="rooms">When true, include room places.</param>
+            <param name="desks">When true, include desk places.</param>
+            <param name="unlicensed">When true, include unlicensed places with basic information.</param>
+            <param name="projection">Comma-separated list of projection fields.</param>
+            <param name="cancellationToken">The cancellation token.</param>
+            <returns>A page of places and an optional continuation token.</returns>
+        </member>
+        <member name="T:Logitech.Api.LogitechSyncClient">
+            <summary>
+            Main entry point for Logitech Sync API operations.
+            </summary>
+        </member>
+        <member name="M:Logitech.Api.LogitechSyncClient.#ctor(System.Net.Http.HttpClient,Logitech.Api.LogitechSyncClientOptions)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Logitech.Api.LogitechSyncClient"/> class.
+            </summary>
+            <param name="httpClient">The source <see cref="T:System.Net.Http.HttpClient"/> containing base address and headers.</param>
+            <param name="options">Client options including mTLS certificate and write-permission settings.</param>
+        </member>
+        <member name="P:Logitech.Api.LogitechSyncClient.Places">
+            <summary>
+            Place operations for rooms and desks.
+            </summary>
+        </member>
+        <member name="T:Logitech.Api.LogitechSyncClientOptions">
+            <summary>
+            Configuration options for <see cref="T:Logitech.Api.LogitechSyncClient"/>.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.LogitechSyncClientOptions.Logger">
+            <summary>
+            Optional logger for client-side diagnostics.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.LogitechSyncClientOptions.ClientCertificate">
+            <summary>
+            Optional client certificate used for mTLS authentication.
+            </summary>
+        </member>
+        <member name="P:Logitech.Api.LogitechSyncClientOptions.IsWritePermitted">
+            <summary>
+            Controls whether write HTTP methods are allowed.
+            </summary>
+        </member>
+        <member name="T:Refit.Implementation.Generated">
+            <inheritdoc />
+        </member>
+        <member name="T:Refit.Implementation.Generated.LogitechApiInterfacesIPlaces">
+            <inheritdoc />
+        </member>
+        <member name="P:Refit.Implementation.Generated.LogitechApiInterfacesIPlaces.Client">
+            <inheritdoc />
+        </member>
+        <member name="M:Refit.Implementation.Generated.LogitechApiInterfacesIPlaces.#ctor(System.Net.Http.HttpClient,Refit.IRequestBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Refit.Implementation.Generated.LogitechApiInterfacesIPlaces.GetAsync(System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.String,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

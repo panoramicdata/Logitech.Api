@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "ylXHZOMTi1I=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\david\\source\\repos\\panoramicdata\\Logitech.Api\\Logitech.Api\\Logitech.Api.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\david\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.1\\microsoft.extensions.dependencyinjection.abstractions.8.0.1.nupkg.sha512",
+    "C:\\Users\\david\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.1\\microsoft.extensions.logging.abstractions.8.0.1.nupkg.sha512",
+    "C:\\Users\\david\\.nuget\\packages\\refit\\11.0.0\\refit.11.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
