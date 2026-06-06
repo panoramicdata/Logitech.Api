@@ -6,6 +6,7 @@
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+    <File Path=".github/workflows/ci.yml" />
     <File Path=".gitignore" />
     <File Path="DESIGN.md" />
     <File Path="Directory.Build.props" />
@@ -13,7 +14,9 @@
     <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="PLAN.md" />
+    <File Path="Publish.ps1" />
     <File Path="README.md" />
+    <File Path="version.json" />
   </Folder>
   <Project Path="Logitech.Api.Test/Logitech.Api.Test.csproj" />
   <Project Path="Logitech.Api/Logitech.Api.csproj" />

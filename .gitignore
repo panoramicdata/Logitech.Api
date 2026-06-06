@@ -17,6 +17,7 @@ coverage.cobertura.xml
 
 # IDE settings
 .vs/
+.vscode/
 
 # Rider
 .idea/
