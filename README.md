@@ -1,6 +1,6 @@
 # Logitech.Api
 
-[![Codacy Badge](https://img.shields.io/codacy/grade/panoramicdata/Logitech.Api)](https://app.codacy.com/gh/panoramicdata/Logitech.Api/dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/b9ee3816316d4888ad5d9bc2203a6437)](https://app.codacy.com/gh/panoramicdata/Logitech.Api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![NuGet Version](https://img.shields.io/nuget/v/Logitech.Api)](https://www.nuget.org/packages/Logitech.Api)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Logitech.Api)](https://www.nuget.org/packages/Logitech.Api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
