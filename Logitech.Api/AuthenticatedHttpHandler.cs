@@ -21,12 +21,13 @@ internal class AuthenticatedHttpHandler : DelegatingHandler
 	{
 		_options = options ?? throw new ArgumentNullException(nameof(options));
 
-		// Create the certificate directly from the strings
 		using var tlsCert = X509Certificate2.CreateFromPem(_options.Certificate, _options.PrivateKey);
 
-		// Windows cross-platform compatibility trick (same as before)
 		var rawData = tlsCert.Export(X509ContentType.Pfx);
-		_clientCertificate = new X509Certificate2(rawData);
+		_clientCertificate = X509CertificateLoader.LoadPkcs12(
+			rawData,
+			password: null,
+			X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.MachineKeySet);
 
 		var innerHandler = new HttpClientHandler
 		{
