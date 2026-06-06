@@ -12,7 +12,7 @@ public interface IPlaces
 	/// <param name="request">The request containing query parameters.</param>
 	/// <param name="cancellationToken">The cancellation token.</param>
 	/// <returns>A page of places and an optional continuation token.</returns>
-	[Get("/org/{orgId}/place")]
+	[Get("/v1/org/{orgId}/place")]
 	Task<PlaceResponse> GetAsync(
 		string orgId,
 		[Query] PlaceRequest request,

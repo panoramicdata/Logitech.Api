@@ -1,6 +1,6 @@
 namespace Logitech.Api.Test;
 
-public sealed class IntegrationTestFixture : IDisposable
+public sealed class IntegrationTestFixture
 {
 	private readonly IConfiguration _configuration;
 
@@ -12,36 +12,24 @@ public sealed class IntegrationTestFixture : IDisposable
 
 		var certificateString = GetRequiredValue("Logitech:Certificate");
 
-		Certificate = LoadCertificate(certificateString);
+		Certificate = certificateString;
 		PrivateKey = GetRequiredValue("Logitech:PrivateKey");
-		OrgId = GetRequiredValue("Logitech:OrgId");
+		OrganizationId = GetRequiredValue("Logitech:OrganizationId");
 	}
 
-	public string OrgId { get; }
+	public string Certificate { get; }
+
+	public string OrganizationId { get; }
 
 	public string PrivateKey { get; }
-
-	public X509Certificate2 Certificate { get; }
 
 	public LogitechSyncClient CreateClient(ITestOutputHelper output) => new(
 		new LogitechSyncClientOptions
 		{
-			Certificate = Certificate,
+			Certificate = GetRequiredValue("Logitech:Certificate"),
 			PrivateKey = PrivateKey,
 			Logger = new XunitLogger(output)
 		});
-
-	public void Dispose() => Certificate.Dispose();
-
-	private static X509Certificate2 LoadCertificate(string certificateString)
-	{
-		if (!certificateString.Contains("BEGIN CERTIFICATE", StringComparison.OrdinalIgnoreCase))
-		{
-			throw new FormatException("Certificate string must be in PEM format, including BEGIN CERTIFICATE and END CERTIFICATE lines.");
-		}
-
-		return X509Certificate2.CreateFromPem(certificateString);
-	}
 
 	private string GetRequiredValue(string key)
 	{

@@ -25,7 +25,7 @@ public class LogitechSyncClient
 
 		var httpClient = new HttpClient(handler)
 		{
-			BaseAddress = new Uri("https://api.sync.logitech.com/v1/")
+			BaseAddress = new Uri("https://api.sync.logitech.com")
 		};
 
 		var client = new HttpClient(handler)

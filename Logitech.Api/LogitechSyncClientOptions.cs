@@ -17,7 +17,7 @@ public class LogitechSyncClientOptions
 	/// <summary>
 	/// Optional client certificate used for mTLS authentication.
 	/// </summary>
-	public required X509Certificate2 Certificate { get; init; }
+	public required string Certificate { get; init; }
 
 	/// <summary>
 	/// Controls whether write HTTP methods are allowed.
