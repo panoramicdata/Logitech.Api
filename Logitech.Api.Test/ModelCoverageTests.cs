@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Reflection;
 
 namespace Logitech.Api.Test;
@@ -160,11 +159,16 @@ public sealed class ModelCoverageTests
 	private static object? CreateListValue(Type type, int seed)
 	{
 		var elementType = type.GetGenericArguments()[0];
-		var list = (IList)Activator.CreateInstance(type)!;
+		var list = Activator.CreateInstance(type);
+		if (list is null)
+		{
+			return null;
+		}
+
 		var element = CreateValue(elementType, seed + 100);
 		if (element is not null)
 		{
-			list.Add(element);
+			type.GetMethod("Add", [elementType])?.Invoke(list, [element]);
 		}
 
 		return list;

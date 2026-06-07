@@ -20,7 +20,7 @@ public sealed class BasicTests
 
 	private sealed class StubHttpMessageHandler : HttpMessageHandler
 	{
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken _)
 			=> Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
 			{
 				RequestMessage = request

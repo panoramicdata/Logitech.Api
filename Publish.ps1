@@ -26,7 +26,7 @@ dotnet tool restore
 # Get version from Nerdbank.GitVersioning
 $versionJson = dotnet nbgv get-version -f json | ConvertFrom-Json
 $version = $versionJson.NuGetPackageVersion
-Write-Host "Version: $version"
+Write-Output "Version: $version"
 
 # Check if tag already exists
 $existingTag = git tag -l $version
@@ -38,4 +38,4 @@ if ($existingTag) {
 # Create and push tag
 git tag $version
 git push origin $version
-Write-Host "Tag $version pushed. CI will publish the package."
+Write-Output "Tag $version pushed. CI will publish the package."
