@@ -20,12 +20,15 @@ if ($behind -gt 0) {
 	exit 1
 }
 
-# Restore local tools so Nerdbank.GitVersioning is available
-dotnet tool restore
-
-# Get version from Nerdbank.GitVersioning
-$versionJson = dotnet nbgv get-version -f json | ConvertFrom-Json
-$version = $versionJson.NuGetPackageVersion
+# Get version from Nerdbank.GitVersioning via the project's MSBuild targets (the
+# referenced NuGet package), so this does not depend on the global 'nbgv' CLI tool.
+$project = Join-Path $PSScriptRoot 'Logitech.Api/Logitech.Api.csproj'
+$buildOutput = dotnet build $project -t:GetBuildVersion --getProperty:NuGetPackageVersion -nologo -v:quiet -p:TreatWarningsAsErrors=false
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Failed to determine version from Nerdbank.GitVersioning.`n$buildOutput"
+    exit 1
+}
+$version = ($buildOutput | Select-Object -Last 1).ToString().Trim()
 Write-Output "Version: $version"
 
 # Check if tag already exists
