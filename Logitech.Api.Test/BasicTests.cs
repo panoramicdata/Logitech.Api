@@ -1,4 +1,4 @@
-namespace Logitech.Api.Test;
+﻿namespace Logitech.Api.Test;
 
 public sealed class BasicTests
 {
@@ -16,14 +16,5 @@ public sealed class BasicTests
 		Action act = () => _ = new LogitechSyncClient(null!);
 
 		act.Should().Throw<ArgumentNullException>();
-	}
-
-	private sealed class StubHttpMessageHandler : HttpMessageHandler
-	{
-		protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken _)
-			=> Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
-			{
-				RequestMessage = request
-			});
 	}
 }
