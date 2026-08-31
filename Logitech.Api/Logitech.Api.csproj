@@ -10,6 +10,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageAuthor>PanoramicData</PackageAuthor>
     <PackageProjectUrl>https://github.com/panoramicdata/Logitech.Api</PackageProjectUrl>
+    <PackageIcon>Icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/panoramicdata/Logitech.Api</RepositoryUrl>
     <Description>A .NET API client for the Logitech Sync API.</Description>
     <PackageTags>logitech, sync, api, client</PackageTags>
@@ -32,5 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="Icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>
