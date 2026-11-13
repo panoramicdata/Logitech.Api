@@ -5,9 +5,12 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Logitech.Api)](https://www.nuget.org/packages/Logitech.Api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+
+Supports .NET 11.0.
+
 ## Introduction
 
-Logitech.Api is a .NET 10 client library for the Logitech Sync Cloud API.
+Logitech.Api is a .NET 11.0 client library for the Logitech Sync Cloud API.
 
 The current OpenAPI definition in this repository documents a single endpoint:
 
@@ -25,7 +28,7 @@ dotnet add package Logitech.Api
 
 ## Requirements
 
-- .NET 10 SDK/runtime
+- .NET 11.0 SDK/runtime
 - A Logitech Sync organization ID
 - A valid client certificate for Logitech Sync API mTLS authentication
 
